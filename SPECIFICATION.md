@@ -924,3 +924,212 @@ The Research Engine conducts research. It does not itself:
 - implement safety and data-handling policy — Section 15
 
 The engine produces evidence; other components decide what to do with it. It must not accumulate downstream responsibilities as a side effect of implementation convenience.
+
+## 6. Source Quality & Citation Integrity
+
+This section defines the standards by which ClaudeForge judges whether a source is suitable evidence for a specific claim, and the rules that keep citations honest from research through the final response.
+
+Section 6 is an evaluation standard, not a component: it defines the criteria that other components apply — the Research Engine when assessing sources during research (5.8), and response behavior when citing evidence (4.7). It executes no research and presents no responses.
+
+### 6.1 Purpose and Scope
+
+This section governs:
+
+- how source quality is evaluated, always relative to a specific claim
+- when a citation is required, and what a citation actually asserts
+- how the claim-to-source relationship is established, scoped, and preserved
+- how source limitations, conflicts, and failures constrain confidence
+
+Research execution — discovery, strategy, verification workflow, stopping — belongs to Section 5. The presentation of citations in the final response belongs to Section 4. The use of evidence to challenge user beliefs belongs to Section 7.
+
+### 6.2 Source Quality as Contextual Evidence
+
+Source quality is contextual: a source is good or bad **for a particular claim**, not in general.
+
+The relevant quality dimensions include authority, relevance, directness, recency, independence, evidence quality, provenance, methodological transparency, completeness, and accessibility. Which dimensions matter, and how much, depends on the claim being supported.
+
+This section defines no numerical scoring formula, no fixed dimension weights, and no universal source ranking. A hierarchy such as "official > academic > news > blog" is not valid independent of the claim: an official page is excellent evidence for its own organization's current pricing and weak evidence for a contested scientific question.
+
+Source quality is evidence about suitability, never a guarantee of truth. An authoritative source can contain an error; quality assessment estimates reliability, it does not confer it.
+
+### 6.3 Authority and Provenance
+
+Authority is a source's competence and standing **on the subject of the claim**: domain expertise, institutional role, first-party knowledge, and track record. Authority is scoped — a source is authoritative *for* something, and its authority does not extend to claims outside that scope.
+
+Provenance is where the information originally comes from and how it reached the source. A source restating information it did not originate carries the reliability of the origin, not its own; evaluation should trace provenance when the claim matters (5.9).
+
+Authority never substitutes for evaluation: an official or prestigious source may still be outdated, incomplete, or wrong, and self-interested sources may be authoritative about their own facts while presenting them selectively.
+
+### 6.4 Relevance and Directness
+
+Relevance means the source addresses the subject of the claim. Directness means the source actually states or contains the specific information the claim asserts, rather than something adjacent to it.
+
+Both are required. An authoritative source that does not actually address the claim is not evidence for that claim, and topical relatedness is never sufficient support (6.9).
+
+### 6.5 Recency and Temporal Validity
+
+Recency requirements are claim-dependent. The question is whether the evidence is current enough **for this claim**, not whether it is new:
+
+- Rapidly changing facts — prices, versions, policies, schedules, office-holders — require sufficiently current evidence; a stale source may be inadequate no matter how authoritative.
+- Stable or historical facts may rest on older sources; an old authoritative source can remain the best available evidence.
+
+A newer source does not automatically outweigh an older one; recency is one dimension among several (6.14).
+
+### 6.6 Independence and Corroboration
+
+Corroboration increases confidence only when the corroborating sources are genuinely independent — different origins, not shared ones (5.11).
+
+Multiple sources repeating the same originating report, press release, or database entry count as one origin. Syndication, aggregation, and citation chains must not be mistaken for independent confirmation, and the number of copies of a claim contributes nothing to its support.
+
+### 6.7 Primary and Secondary Sources
+
+Primary sources should generally be preferred when they directly provide the relevant evidence (5.9). They are not automatically better: a secondary source may be more useful for synthesis, interpretation, context, or accessibility, and may be the appropriate evidence for claims about interpretation or consensus.
+
+Secondary restatements of primary facts carry distortion risk. When a claim materially depends on a primary fact, evaluation should prefer the primary source or note that the support is secondhand.
+
+### 6.8 Evidence Strength and Limitations
+
+The strength of support a source provides is bounded by its limitations: incompleteness, indirectness, staleness, ambiguity, methodological weakness, or restricted accessibility.
+
+Known limitations must be recorded with the evidence and must survive downstream processing: no component may silently treat limited evidence as stronger than it was assessed to be. A claim's stated confidence must remain within what its evidence, limitations included, actually supports (2.5).
+
+### 6.9 Claim-Level Source Evaluation
+
+Evaluation is performed per claim: a source is evaluated against the specific claim it is being used to support, not against the topic in general.
+
+For a given claim and source, evaluation distinguishes at minimum:
+
+- the source exists
+- the source is relevant to the claim's subject
+- the source contains supporting information
+- the source directly supports the claim
+- the source sufficiently supports the claim, given the claim's stakes
+- the source conflicts with the claim
+- the source is insufficient to establish the claim
+
+Only "sufficiently supports" justifies treating the claim as supported at its stakes level. Each lower rung is progress, not sufficiency, and being related to the topic is the bottom of the ladder, not the top.
+
+User-provided sources are evaluated with these same standards. They must not be dismissed because the user provided them, and they must not be treated as verified because the user provided them (3.12).
+
+### 6.10 Citation Requirements
+
+Not every statement requires a citation, and absence of a citation does not imply falsehood. Whether a claim requires citation depends on:
+
+- factual specificity — precise figures, dates, quotations, and named facts over general knowledge
+- external verifiability — whether a source could meaningfully be checked
+- recency-dependence — whether the claim rests on current information
+- stakes — the consequences of the claim being wrong
+- origin — whether the claim came from research findings (5.18) rather than model knowledge or reasoning
+- attribution — whether the claim reports someone's words, work, or position
+
+Claims drawn from research findings should generally be citable to their supporting sources. Common knowledge, the system's own reasoning, and trivial statements need no citation. Citation density is not a quality metric; citations are required where they carry weight, not where they decorate (2.9, 4.7).
+
+### 6.11 Citation Correctness
+
+A citation asserts that the cited source supports the specific associated claim. That relationship must have been established by claim-level evaluation (6.9) before the citation is made.
+
+A citation is incorrect when the source does not contain the claimed support, supports a weaker or narrower version of the claim than the one stated, or is cited merely because it appeared in search results (2.7). Miscitation is a violation even when the claim itself happens to be true.
+
+### 6.12 Citation Completeness
+
+Material, externally verifiable claims that warrant citation should not systematically remain unsupported when research produced usable sources.
+
+Completeness does not mean citing everything: trivial and common-knowledge statements are exempt (6.10). But when a material claim relies on research whose source cannot be cited — lost, inaccessible, or unverifiable — the claim's epistemic status must reflect that, rather than the gap being left silent (6.15).
+
+### 6.13 Citation Scope and Placement
+
+The relationship between a citation and the claim it supports must be clear. A citation supports the specific claim or claims it is attached to — never, implicitly, everything in the surrounding paragraph.
+
+Unsupported claims must not borrow authority from a citation attached to a neighboring claim. When one source supports several claims, the attachment should make each supported claim identifiable.
+
+No citation syntax or format is defined here; presentation belongs to Section 4 and concrete formats to Sections 12 and 13.
+
+### 6.14 Conflicting Sources
+
+When sources conflict, evaluation weighs them on the dimensions of 6.2 as they apply to the disputed claim: authority on the subject, directness, independence, methodology, recency where relevant, specificity, corroboration, and known limitations.
+
+A conflict must not be resolved by:
+
+- choosing the source that agrees with the user
+- choosing the source that agrees with the model's prior expectation
+- choosing the newest source automatically
+- choosing the most famous or most prestigious source automatically
+- counting repeated copies of the same origin
+
+If evaluation cannot adequately resolve the conflict, the conflict is preserved and the resulting uncertainty communicated (5.12, 2.16). Conflicts reduce confidence in the affected claims until resolved. How conflicts are handled during research belongs to 5.12; how disputes with a user's position are handled belongs to Section 7.
+
+### 6.15 Insufficient or Inaccessible Evidence
+
+When a source is weak, incomplete, outdated, ambiguous, inaccessible, or cannot be retrieved again, the evidence status of the claims it was meant to support must remain limited (5.13).
+
+ClaudeForge must never compensate for missing evidence by fabricating source contents, quotations, publication details, URLs, authors, dates, or citation relationships (2.4).
+
+A source that cannot be accessed or verified must not be cited as verified support, and its inaccessibility must not be hidden. Consistent with 2.19 and 5.16, the correct behavior is honest, limited status — not a manufactured appearance of support.
+
+### 6.16 Source Quality for High-Stakes Claims
+
+Evidentiary requirements scale with the consequences of being wrong (2.9):
+
+- A low-stakes, casual, or illustrative claim may require little or no external sourcing.
+- A consequential claim — one whose error would materially harm the user's decisions, resources, safety, or work — requires stronger, more direct, more current, and, where feasible, independently corroborated evidence.
+
+This scaling is a direction, not a formula: no universal threshold or definition of "high stakes" is fixed here. Operational thresholds and their evaluation belong to Section 14. No level of sourcing achieves perfect verification, and none is promised.
+
+### 6.17 Epistemic Status and Confidence
+
+A citation never upgrades a claim's epistemic status by itself:
+
+- "has a citation" does not mean "verified"
+- "official source" does not mean "true"
+- "multiple citations" does not mean "independently corroborated" (6.6)
+
+Status reflects the evaluated relationship between claim and evidence (6.9), the quality of that evidence (6.2), and its independence (6.6) — expressed in the status vocabulary of 5.17, which this section constrains but does not redefine.
+
+Status is also not permanent. If the evidence changes, a source becomes unavailable, or a previously established support relationship can no longer be confirmed, the prior confidence level must not be falsely preserved: the affected claims' status must be reduced or flagged accordingly.
+
+### 6.18 Citation Failure and Graceful Degradation
+
+When a citation obligation cannot be met — the source is lost, the quotation cannot be re-verified, publication details are unknown — ClaudeForge degrades honestly (2.19):
+
+- State the claim with its true, reduced epistemic status rather than dropping it silently, when it remains useful.
+- Omit the citation rather than fabricate or approximate one.
+- Disclose the limitation when it is material to how the user should treat the claim (4.17).
+
+An honest uncited claim is acceptable; a fabricated citation never is.
+
+### 6.19 Source/Citation Invariants
+
+The following invariants must hold in every implementation, environment, and supported model:
+
+1. Never fabricate sources, citations, quotations, publication details, or claim-to-source relationships.
+2. Never attach a citation to a claim the cited source does not support.
+3. Never treat repetition of a shared origin as independent corroboration.
+4. Never treat a source as evidence for claims outside what it actually addresses.
+5. Never let a citation upgrade a claim's epistemic status by itself.
+6. Preserve recorded source limitations through all downstream processing.
+7. Never silently hide or discard evidence conflicts.
+8. Never represent inaccessible or unverifiable evidence as verified support.
+9. Keep citation requirements proportional to specificity, verifiability, and stakes.
+10. Require appropriately stronger evidence as claim stakes increase.
+11. Evaluate user-provided sources by the same standards as discovered sources.
+
+A violation of any invariant is a specification violation regardless of the quality of the downstream outcome.
+
+### 6.20 Separation of Responsibilities
+
+Section 6 owns evaluation standards: source-quality dimensions, claim-level evaluation, citation policy — requirements, correctness, completeness, scope — conflict-weighing criteria, and the preservation of source limitations and epistemic status.
+
+Section 6 does not itself:
+
+- execute research, discovery, strategy, or stopping decisions — Section 5
+- present evidence and citations in the final response — Section 4
+- challenge user assumptions or beliefs — Section 7
+- apply bias and neutrality handling — Section 8
+- define token and context optimization policy — Section 9
+- select models — Section 10
+- define Claude Desktop behavior — Section 11
+- define citation formats, storage, or concrete architecture — Sections 12 and 13
+- define testing thresholds and operational evaluation — Section 14
+- implement safety and data-handling policy — Section 15
+
+Section 6 is the standard; other components apply it wherever sources are weighed — the Research Engine during research (5.8), response behavior at citation time (4.7). The standard must not drift between those applications (2.17).

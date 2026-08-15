@@ -721,3 +721,206 @@ Section 4 does not define:
 - security and safety implementation — Section 15
 
 Where this section touches those areas — evidence (4.7), uncertainty (4.8), corrections (4.9), failures (4.17) — it governs their presentation in the final response. The processes that generate those results belong to their owning sections.
+
+## 5. Research Engine
+
+The Research Engine is the component that gathers and evaluates external information when a task requires it. It acts on the research need identified during compilation (3.9), conducts proportional research, and returns findings with their epistemic status to downstream components.
+
+This section defines the behavioral contract of research: when research runs, what it pursues, how sources are found and weighed, when it stops, and what it hands over. It defines behavior, not implementation. Research improves the reliability of answers; it does not guarantee truth, and this section promises no perfect verification.
+
+### 5.1 Purpose and Scope
+
+The Research Engine exists to extend ClaudeForge beyond the model's internal knowledge when a task requires current, specialized, externally verifiable, or otherwise unavailable information (2.6).
+
+Its scope runs from an accepted research trigger to the handoff of structured findings. Everything before the trigger belongs to detection (3.9); everything after the handoff belongs to downstream components (Sections 4, 6, 7).
+
+### 5.2 Research Trigger
+
+Research may be initiated by:
+
+- a research requirement flagged during compilation (3.9)
+- a need discovered during downstream processing that compilation did not anticipate
+- an evidence request from another component, such as the Truth & Challenge Protocol (Section 7)
+
+A trigger is a candidate, not a command. Before executing research, the engine should confirm that external information is actually necessary and would materially improve the result (2.6). Declining flagged research because the model's reliable knowledge is already sufficient is correct behavior, not a failure.
+
+User-provided information is not researched by default (3.9); investigating it is warranted only when the task materially depends on its accuracy, under the rules of Section 7.
+
+### 5.3 Research Objective
+
+Research must serve an explicit objective before searching begins. The objective states:
+
+- what question or claim the research must resolve
+- how the answer serves the task's requirements (3.6)
+- what would make the gathered evidence sufficient
+
+Research without an objective is aimless collection and must not occur. Each research action should be attributable to the objective it serves.
+
+### 5.4 Research Strategy
+
+The engine should select a strategy proportional to the objective and the stakes:
+
+- a targeted lookup for a simple, current, uncontested fact
+- multi-source comparison for consequential, disputed, or error-prone claims
+- broader sweeps only when the task genuinely requires coverage (for example, comparisons across many entities)
+
+Strategy is selected by need, not by capability. The most thorough available strategy is not the default (2.9, 2.20).
+
+### 5.5 Query Formulation
+
+Queries should be derived from the research objective, not copied from the user's raw wording. They should be precise and targeted, may be reformulated when results miss the objective, and may take several formulations when a topic has multiple facets or terminologies.
+
+Queries sent to external services should contain only the information needed to retrieve the evidence. Sensitive or user-identifying conversation content must not be included in external queries unless it is necessary for the task; detailed data-handling rules belong to Section 15.
+
+### 5.6 Source Discovery
+
+Discovery finds candidate sources relevant to the objective. Discovery should be broad enough that the objective is not decided by a single arbitrary result, and no broader.
+
+A discovered source is a candidate only. Discovery confers no evidentiary weight: finding a source does not make it relevant, credible, or correct.
+
+### 5.7 Source Selection
+
+From the discovered candidates, the engine should select the sources that directly address the claim in question and offer the best expected quality (2.7).
+
+Additional sources should be consulted only when they materially improve confidence, coverage, conflict resolution, or another element of the research objective. More sources are not inherently better research; unselective accumulation wastes context and tokens (2.13) without improving reliability.
+
+### 5.8 Source Quality
+
+The engine assesses source quality as part of research, considering at minimum the criteria of 2.7: relevance, authority, currency, independence, and direct support for the claim.
+
+A source's quality bounds the strength of any claim it supports (2.5): weak sourcing cannot carry a strong conclusion. Detailed source-quality evaluation rules and citation policy belong to Section 6; this section requires only that quality assessment occurs during research and constrains how findings are used.
+
+### 5.9 Primary vs. Secondary Evidence
+
+For claims about an entity, the engine should prefer primary evidence — official documentation, original announcements, first-party data, original studies — over secondary reporting.
+
+Secondary sources are appropriate for interpretation, context, and corroboration, but secondary restatements of primary facts carry distortion risk. For claims that matter, the engine should trace toward the primary source when reasonably feasible.
+
+### 5.10 Verification
+
+Discovery finds information; verification determines whether that information is sufficiently trustworthy for its intended use. The two must not be conflated: a claim found is not a claim verified.
+
+Verification effort must be proportional to the importance, risk, and disputedness of the claim (2.9, 3.9). Routine low-stakes facts may rest on a single adequate source; consequential claims warrant independent support.
+
+Verification status attaches to individual claims, not to the research task as a whole. A response may legitimately contain verified claims and unverified claims side by side, provided their status is preserved (5.17).
+
+### 5.11 Cross-Source Comparison
+
+When multiple sources inform an objective, the engine should compare them rather than aggregate them blindly: identify where they agree, where they disagree, and what none of them covers.
+
+Corroboration strengthens a claim only when the corroborating sources are independent. Multiple sources repeating a single origin count as one source; circular reporting must not be mistaken for confirmation.
+
+### 5.12 Conflicting Evidence
+
+Conflicts between sources must not be silently reconciled. When credible sources disagree, the engine must:
+
+- identify the conflict explicitly
+- evaluate the conflicting sources on quality, currency, independence, and directness (5.8)
+- resolve the conflict only when the evidence on one side is clearly stronger
+- otherwise preserve the disagreement as documented uncertainty (2.16), with the engine's assessment of the balance
+
+A conflict must not be resolved by preferring the side that agrees with the user's assumption or with the model's prior expectation (2.17).
+
+### 5.13 Insufficient Evidence
+
+When available evidence is weak, incomplete, outdated, or inaccessible, the engine must record that insufficiency rather than compensate for it.
+
+The engine should distinguish:
+
+- no evidence found
+- evidence found but insufficient for the intended claim
+- evidence known to exist but inaccessible
+
+Insufficient evidence must not be padded, extrapolated, or upgraded to make a finding presentable. Reporting the best available information with an honest status is the correct outcome (2.5, 2.16).
+
+### 5.14 Research Depth and Proportionality
+
+Research depth must be proportional to the task's importance, risk, uncertainty, and currency requirements (2.9, 3.10).
+
+Simple tasks resting on stable knowledge legitimately receive no research at all (2.6). High-stakes, disputed, fast-moving, or coverage-heavy tasks may justify substantially deeper research.
+
+Depth is bounded by the research objective's sufficiency condition (5.3), not by theoretical completeness. The question is never "is there more information?" — there always is — but "would more information materially change the conclusion or its confidence?"
+
+### 5.15 Stopping Conditions
+
+Research must terminate. The engine should stop when any of the following holds:
+
+- the research objective is met with confidence adequate to the stakes
+- additional research is unlikely to materially change the conclusion or its confidence
+- returns are diminishing while cost continues to accumulate (2.13)
+- the effort already spent has reached what the task proportionally warrants (2.9)
+- research has failed and no viable path remains (5.16)
+
+Stopping with insufficient evidence is legitimate; the insufficiency is then recorded per 5.13. Searching indefinitely because additional information could theoretically exist is a violation of this section.
+
+### 5.16 Research Failure and Graceful Degradation
+
+Research can fail: tools may be unavailable, sources inaccessible, retrieval may return nothing usable. In these cases, consistent with 2.19:
+
+- The engine must not fabricate results, sources, or the appearance of completed research (2.4).
+- It should record what failed and why, when that is relevant to how the findings should be treated.
+- It may fall back to the model's internal knowledge, labeled as such — never presented as externally verified.
+- Partial research must be handed over as partial findings, not silently promoted to complete findings.
+
+The presentation of failures and partial results in the final response is governed by 4.17.
+
+### 5.17 Epistemic Status Preservation
+
+Every finding handed downstream must carry its epistemic status. At minimum, the engine distinguishes:
+
+- verified findings — supported by evidence adequate to the claim's stakes
+- weakly supported or partial findings
+- disputed findings — credible sources disagree (5.12)
+- model knowledge — no external verification performed or possible
+- unresolved questions
+- unavailable evidence (5.13)
+
+Status must survive the handoff: summarization and compression of findings (2.13) must not strip or upgrade epistemic status. Repetition must never upgrade status — a claim seen many times is not thereby verified (5.11).
+
+### 5.18 Research Output
+
+The engine hands downstream components a conceptual findings structure containing, as applicable:
+
+- the findings relevant to the research objective
+- the sources supporting each finding
+- the epistemic status of each finding (5.17)
+- identified conflicts and their assessment (5.12)
+- gaps, unresolved questions, and failures (5.13, 5.16)
+
+Output should be selected and compressed for usefulness to the task (2.13) without dropping status, material caveats, or conflicts.
+
+This structure is conceptual; no serialization format, schema, or storage mechanism is defined here (Sections 12 and 13). Downstream, Section 4 governs how findings appear in the response, Section 6 governs source-quality and citation policy, and Section 7 uses findings as evidence for challenges.
+
+### 5.19 Research Invariants
+
+The following invariants must hold in every implementation, environment, and supported model:
+
+1. Never fabricate research results, sources, quotations, or the appearance of research that was not performed.
+2. Never treat a discovered source as reliable or a found claim as verified without evaluation.
+3. Keep research depth proportional to the task's requirements.
+4. Never hide or silently reconcile material conflicts between credible sources.
+5. Never represent failed or partial research as successful or complete.
+6. Preserve the epistemic status of every finding through compression and handoff.
+7. Never upgrade a claim's status through repetition alone.
+8. Terminate: no unbounded searching.
+9. Do not research when it would not materially improve the result.
+10. Ensure downstream components can distinguish verified evidence, uncertain findings, and fallback model knowledge.
+
+A violation of any invariant is a specification violation regardless of the quality of the downstream outcome.
+
+### 5.20 Separation of Responsibilities
+
+The Research Engine conducts research. It does not itself:
+
+- detect or flag the research requirement — Section 3 (3.9)
+- define detailed source-quality and citation policy — Section 6
+- challenge user assumptions or perform the truth/challenge process — Section 7
+- apply bias and neutrality handling — Section 8
+- define token and context optimization policy — Section 9
+- select models or allocate model capability — Section 10
+- define Claude Desktop behavior — Section 11
+- define concrete tools, APIs, architecture, or data formats — Sections 12 and 13
+- present findings to the user — Section 4
+- implement safety and data-handling policy — Section 15
+
+The engine produces evidence; other components decide what to do with it. It must not accumulate downstream responsibilities as a side effect of implementation convenience.

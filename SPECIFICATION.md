@@ -478,7 +478,7 @@ The compiled task is a conceptual structure containing, as applicable:
 
 Only fields that carry material information for the task at hand should be populated. A minimal representation may consist of little more than the objective.
 
-This representation is conceptual. This section requires no specific programming language, serialization format, schema, class structure, or file format; concrete representations belong to Sections 12 and 13.
+This representation is conceptual. This section requires no specific programming language, serialization format, schema, class structure, or file format; concrete representations belong to the implementation level, within the boundaries defined by Sections 12 and 13.
 
 **Visibility.** The internal task representation must not be shown to the user by default. It may be exposed only when:
 
@@ -889,7 +889,7 @@ The engine hands downstream components a conceptual findings structure containin
 
 Output should be selected and compressed for usefulness to the task (2.13) without dropping status, material caveats, or conflicts.
 
-This structure is conceptual; no serialization format, schema, or storage mechanism is defined here (Sections 12 and 13). Downstream, Section 4 governs how findings appear in the response, Section 6 governs source-quality and citation policy, and Section 7 uses findings as evidence for challenges.
+This structure is conceptual; no serialization format, schema, or storage mechanism is defined here — concrete forms belong to the implementation level, within the boundaries defined by Sections 12 and 13. Downstream, Section 4 governs how findings appear in the response, Section 6 governs source-quality and citation policy, and Section 7 uses findings as evidence for challenges.
 
 ### 5.19 Research Invariants
 
@@ -1042,7 +1042,7 @@ The relationship between a citation and the claim it supports must be clear. A c
 
 Unsupported claims must not borrow authority from a citation attached to a neighboring claim. When one source supports several claims, the attachment should make each supported claim identifiable.
 
-No citation syntax or format is defined here; presentation belongs to Section 4 and concrete formats to Sections 12 and 13.
+No citation syntax or format is defined here; presentation belongs to Section 4, and concrete formats belong to the implementation level, within the boundaries defined by Sections 12 and 13.
 
 ### 6.14 Conflicting Sources
 
@@ -2008,7 +2008,7 @@ Routing decides which model does the work. Every other section decides how the w
 
 This section specializes the ClaudeForge specification for Claude Desktop, a concrete execution environment. It describes how environmental conditions — available tools, access, authorization, persistence — affect ClaudeForge's behavior there.
 
-It is a variant, not the definition. Sections 1–10 remain fully authoritative inside Claude Desktop, and ClaudeForge remains implementable in other environments. Claude Desktop constraints shape what can be done in that environment; they never redefine what ClaudeForge is.
+It is a variant, not the definition. The general specification remains fully authoritative inside Claude Desktop, and ClaudeForge remains implementable in other environments. Claude Desktop constraints shape what can be done in that environment; they never redefine what ClaudeForge is.
 
 ### 11.1 Purpose and Scope
 
@@ -2024,8 +2024,9 @@ Environment properties are conditions of execution, not properties of ClaudeForg
 
 ### 11.3 General Rules Remain Authoritative
 
-Sections 1–10 apply unmodified inside Claude Desktop. Environmental constraints may limit what can be accomplished; they must never silently redefine:
+The general specification applies unmodified inside Claude Desktop. Environmental constraints may limit what can be accomplished; they must never silently redefine:
 
+- safety requirements (2.18, Section 15)
 - truth standards (Section 7) or evidence standards (Sections 5, 6)
 - neutrality (Section 8) or challenge behavior (Section 7)
 - epistemic status rules (3.12, 5.17)
@@ -2033,7 +2034,7 @@ Sections 1–10 apply unmodified inside Claude Desktop. Environmental constraint
 - token and context principles (Section 9)
 - model-routing principles (Section 10)
 
-Where a constraint prevents meeting a general requirement, the consequence is explicit degradation (11.13) — never a quiet redefinition of the requirement. Conversely, Desktop-specific constraints must never propagate upward into Sections 1–10 as universal requirements.
+Where a constraint prevents meeting a general requirement, the consequence is explicit degradation (11.13) — never a quiet redefinition of the requirement. Conversely, Desktop-specific constraints must never propagate upward into the general specification as universal requirements.
 
 ### 11.4 Environment Capability Awareness
 
@@ -2158,8 +2159,8 @@ Where Claude Desktop exposes a single model, Section 10's rules still hold, dege
 
 The following invariants must hold in every Claude Desktop deployment:
 
-1. The general specification (Sections 1–10) remains fully authoritative inside Claude Desktop.
-2. Environment constraints never silently redefine truth, evidence, neutrality, challenge, epistemic, response, context, or routing standards.
+1. The general specification remains fully authoritative inside Claude Desktop.
+2. Environment constraints never silently redefine safety, truth, evidence, neutrality, challenge, epistemic, response, context, or routing standards.
 3. Never assume a capability, tool, integration, authorization, or persistence that is not actually available.
 4. Never fabricate the results of capabilities the environment could not provide.
 5. Keep model capability, environment capability, availability, authorization, and user-provided resources distinct.
@@ -2191,7 +2192,7 @@ Section 11 does not own:
 - testing — Section 14
 - safety and security implementation — Section 15
 
-Section 11 is one environment's profile of ClaudeForge. The framework is defined by Sections 1–10; other environment variants may stand beside this one, subject to the same rule that a variant constrains execution and never redefines the specification.
+Section 11 is one environment's profile of ClaudeForge. The framework is defined by the general specification; other environment variants may stand beside this one, subject to the same rule that a variant constrains execution and never redefines the specification.
 
 ## 12. Architecture
 
@@ -2591,7 +2592,7 @@ Its central principle: **testing validates whether an implementation behaves con
 
 This section owns evaluation methodology and the interpretation of test results: test levels, scenario and adversarial design, regression discipline, the operationalization of the specification's qualitative criteria, and the honest classification of failures.
 
-It evaluates observable implementation behavior (Section 13) against the requirements of Sections 1–13. It defines no testing framework, language, automation technology, or reporting schema — those are implementation choices. It does not modify the requirements it tests, and safety testing remains governed by Section 15.
+It evaluates observable implementation behavior (Section 13) against every applicable normative requirement of this specification, including the safety requirements of Section 15. It defines no testing framework, language, automation technology, or reporting schema — those are implementation choices. It does not modify the requirements it tests, and safety testing remains governed by Section 15.
 
 ### 14.2 Testability as a Specification Property
 
@@ -2832,7 +2833,7 @@ This priority binds at every point: every component (12.19), every model (10.19)
 Instruction authority is ordered, and the order is not self-modifiable:
 
 1. Host- and system-level instructions and applicable safety policies
-2. The ClaudeForge specification (Sections 1–14)
+2. The ClaudeForge specification
 3. Skill implementation content, per its internal precedence (13.6)
 4. Configuration and user preferences, within 13.15's bounds
 5. User requests — honored fully within all of the above

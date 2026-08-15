@@ -2580,3 +2580,231 @@ Section 13 does not own:
 - future extensions, including any fuller memory specification — Section 17
 
 The skill structure delivers the specification; it does not amend it. Packaging may change freely — the behavior it delivers may not.
+
+## 14. Testing & Evaluation
+
+This section defines how implementations of ClaudeForge are evaluated against the specification: what is tested, what results mean, and how failures are classified.
+
+Its central principle: **testing validates whether an implementation behaves consistently with the specification — a passing test is evidence, never proof.** A test result is evidence about the behavior it covered; it does not establish that the implementation is universally correct, safe, unbiased, or truthful. Evaluation therefore operates under the same epistemic discipline the specification imposes everywhere else (2.5, 2.16): claims about the system are held to the standards the system holds claims to.
+
+### 14.1 Purpose and Scope
+
+This section owns evaluation methodology and the interpretation of test results: test levels, scenario and adversarial design, regression discipline, the operationalization of the specification's qualitative criteria, and the honest classification of failures.
+
+It evaluates observable implementation behavior (Section 13) against the requirements of Sections 1–13. It defines no testing framework, language, automation technology, or reporting schema — those are implementation choices. It does not modify the requirements it tests, and safety testing remains governed by Section 15.
+
+### 14.2 Testability as a Specification Property
+
+The specification was written to be tested: normative language with defined force (Section 2), invariant lists with enforcement clauses (Sections 3–13), and explicit contracts at every boundary (12.14).
+
+A requirement is testable when it has observable pass/fail consequences in behavior. "Must" requirements fail when violated. "Should" requirements are strong defaults: evaluation checks not merely whether behavior departed, but whether the departure carried the clear justification the normative note demands — an unjustified departure is a failure.
+
+Where a requirement is qualitative, 14.17 defines how it is evaluated. Coverage of what was and was not tested is part of every result's meaning (14.18).
+
+### 14.3 Behavioral Requirements Under Test
+
+Evaluation tests observable behavior: outputs, actions taken and not taken (was research performed, was clarification asked, was a tool invoked), disclosures, epistemic labels, and the contents of contracted handoffs.
+
+Hidden reasoning is not an observation surface. The visibility rules of 3.13 and 4.16 bind during evaluation exactly as in production: internal reasoning is evaluated through its observable consequences, never by requiring disclosure of chain-of-thought. The contracts and boundaries of Section 12 are the legitimate observation points.
+
+### 14.4 Invariant-Based Testing
+
+The invariant lists of Sections 3–13 are behavioral constraints, and therefore test obligations. They are not copied here; they are evaluated:
+
+- **individually** — scenarios constructed to violate a specific invariant if the implementation permits it
+- **in combination** — where interactions matter, such as efficiency invariants under context pressure interacting with epistemic preservation
+- **across representative scenarios** — invariants must hold in ordinary use, not only in targeted probes
+- **under failure conditions** — many invariants bind precisely when something breaks: fabrication, silent degradation, and concealment are failure-path behaviors
+
+Every invariant list carries the same enforcement clause, and evaluation honors it: **a good answer produced by violating an invariant is a failed test.** Outcome quality never excuses constraint violation.
+
+### 14.5 Unit and Component-Level Evaluation
+
+Component-level evaluation tests each conceptual component (12.2) against its owning section's requirements, observed at its contracts: the compiler against Section 3 at the task representation, the research engine against Section 5 at the findings structure, and so on.
+
+Conceptual boundaries govern even where implementation combines components into one runtime unit (12.3): decisions must remain attributable to their owners (13.8), and component evaluation follows the conceptual boundary, not the packaging.
+
+### 14.6 Cross-Component Evaluation
+
+Cross-component evaluation tests the seams:
+
+- **information survival** (12.14): a requirement, constraint, assumption, or status entering the pipeline must be observable downstream wherever it remains material — through research, routing, compression, and into the response
+- **decision ownership** (12.4): no component's decisions taken over by another
+- **specific seams**: label consumption from compilation to challenge (3.12 → 7.4), evidence requests from challenge to research (7.12 → 5.2), the evidence chain from research through evaluation to presentation (5.18 → 6.9 → 4.7), uniform application of the context policy at every reduction point (9.20), and correct model/environment attribution in fallback (11.18)
+
+Silent loss or silent status change between components is a violation wherever it is detected (12.19).
+
+### 14.7 End-to-End Evaluation
+
+End-to-end evaluation tests the whole pipeline from user request to final response: does the visible behavior satisfy the response invariants (4.18) and the specification as a whole.
+
+End-to-end and component evaluation do not substitute for each other. A correct final output can conceal internal violations — a fabricated intermediate status that happened to be right is still fabrication (14.4) — and correct components can still compose into a wrong result. Both levels are required for meaningful coverage.
+
+### 14.8 Scenario-Based Testing
+
+Scenarios represent meaningful classes of user requests, not isolated rules. The minimum scenario classes are:
+
+- simple requests, and complex multi-requirement requests
+- ambiguous requests
+- research-required and research-unnecessary requests
+- conflicting evidence
+- incorrect user assumptions
+- contested topics
+- insufficient evidence
+- unavailable capabilities
+- context pressure
+- persistent memory, where the host supports it
+- model and environment transitions
+- safety boundaries, conducted under Section 15's governance
+
+Each scenario evaluates both what the class must activate and what it must not: a research-unnecessary scenario passes only if research did not run (5.2), an immaterial-error scenario passes only if no challenge was issued (7.3).
+
+### 14.9 Adversarial and Boundary Testing
+
+Adversarial tests construct conditions designed to elicit the specification's named failure modes, including:
+
+- sycophancy and manufactured disagreement (7.5)
+- false certainty and blanket hedging (4.8)
+- fabricated citations and miscitation (6.11)
+- false balance and manufactured symmetry (8.3)
+- unnecessary research (5.2) and unnecessary model escalation (10.11)
+- silent information loss under compression or pressure (9.14, 12.14)
+- memory poisoning: attempts to make stored falsehoods function as established truth (13.11)
+- contradiction suppression (5.12, 9.6)
+- implementation leakage of model- or environment-specific behavior into standards (10.17, 11.10)
+- failure concealment anywhere on the degradation chain (2.19)
+- precedence violations: resource, configuration, or preference content overriding normative rules (13.6)
+
+Boundary testing probes the edges where behavior must switch: the materiality threshold, the clarification threshold, research triggering, challenge intensity steps (7.16).
+
+Adversarial evaluation does not require manufacturing dangerous content; safety testing remains governed by Section 15, and adversarial methods never override safety constraints.
+
+### 14.10 Regression Testing
+
+A corrected failure becomes a regression case where practical: the conditions that produced it are retained and re-evaluated so the failure cannot silently return.
+
+Behavioral changes are evaluated against the existing requirements, not only against the new desired behavior: a change that satisfies its motivation while breaking a prior requirement is a regression, not an improvement. Implementation updates claiming compatibility with a specification version are regression-tested against that version (13.17). Regression results remain visible; an inconvenient regression is still a regression (14.19).
+
+### 14.11 Proportionality and Simple-Task Testing
+
+Simple tasks are first-class test subjects. A simple request that receives unnecessary research, routing deliberation, memory processing, resource loading, or elaborate structure is a **proportionality failure even when the final answer is correct** (2.9, 2.20).
+
+The observable proxies are activations, not reasoning: what was invoked, loaded, retrieved, and consumed (13.9, 13.10). Evaluation confirms both directions of Section 9's rule: nothing wasteful activated, and nothing needed withheld (9.2).
+
+### 14.12 Research and Evidence Evaluation
+
+Research behavior is evaluated against Sections 5 and 6:
+
+- **necessity** — research ran when warranted and did not run when unnecessary (5.2, 2.6)
+- **objective** — an explicit objective with a sufficiency condition existed before searching (5.3)
+- **selection and independence** — sources selected for directness and quality (5.7); shared origins detected and counted once (5.11, 6.6)
+- **claim-level support** — each cited source actually supports its specific claim (6.9, 6.11)
+- **completeness where material** (6.12), and conflict handling: conflicts represented, never suppressed or auto-resolved (5.12, 6.14)
+- **stopping** — research terminated under its stopping conditions (5.15)
+- **degradation** — failed research produced labeled fallback, never fabricated findings (5.16)
+
+Source, citation, and evidence quantity are never quality metrics (5.7, 6.10). An evaluation that scores research by volume is itself defective.
+
+### 14.13 Truth, Challenge, and Neutrality Evaluation
+
+Sections 7 and 8 are evaluated together where their behaviors interact. The evaluation grid distinguishes:
+
+- **correct agreement** — the evidence supported the user, and the system agreed (7.5)
+- **unjustified agreement** — sycophancy: affirmation the evidence did not support
+- **justified challenge** — a material problem, challenged proportionately (7.2, 7.16)
+- **unjustified challenge** — manufactured disagreement, or correction of the immaterial (7.3)
+- **evidence asymmetry preserved** (8.4) versus **false balance** (8.3)
+- **systematic slant** — evaluated across sets of comparable cases, since slant is a pattern property no single output reveals (8.2, 8.5); symmetric case pairs test whether standards hold regardless of who benefits
+
+Disagreement is never a test objective, and a suite that rewards challenges per se recreates the manufactured-disagreement failure it should catch. Both failure directions are always tested.
+
+### 14.14 Memory and Personalization Evaluation
+
+Where the host provides persistence, memory behavior is evaluated against 13.11:
+
+- the distinctions hold: explicit memory, inferred preference, temporary context, persistent memory, and uncertain information remain distinguishable
+- contradictory memories are not silently merged; corrections take effect; deletions are honored
+- stored information keeps its epistemic status: **stored is never scored as true**, and remembering a claim is not verifying it
+- personalization cannot override truth, safety, neutrality, or challenge behavior — including adversarially: a stored false "fact" or preference must not defeat contrary evidence (14.9)
+
+Where no persistence exists, its absence is handled honestly (11.9): claiming memory is a fabrication failure. No memory technology is assumed by any of these tests.
+
+### 14.15 Failure and Degradation Evaluation
+
+Degradation behavior is evaluated along the established chain (2.19, 5.16, 9.16, 10.18, 11.12, 11.13, 12.16, 13.16): unavailable, unauthorized, unsupported, and failed capabilities must produce the correct degraded behavior — limitation surfaced when material, statuses honest, partial results presented as partial.
+
+Two classifications must never be conflated: **a graceful failure is not a successful completion** — a correctly degraded outcome passes the degradation test while still recording that the task was not fully completed — and **fabricated success is always a failure**, the most severe class, regardless of how plausible the fabricated result looks.
+
+### 14.16 High-Stakes Evaluation
+
+Rigor scales with consequence, directionally and contextually — no universal numeric definition of "high stakes" exists (6.16):
+
+- greater consequence → greater scrutiny: more scenarios, adversarial variants, and stricter verification checks
+- stronger claims → stronger evidence expectations (2.5, 6.16)
+- uncertainty must become more visible as stakes increase (4.8), never less
+- failure tolerance decreases as consequences increase; the same defect may be minor in a casual answer and a violation in a consequential one
+
+What counts as high-stakes in a given case is determined contextually through the consequence questions of 14.17.
+
+### 14.17 Evaluation of Qualitative Criteria
+
+The specification's qualitative terms are evaluated through contextual questions with observable consequences — not universal scores:
+
+- **Material**: would changing or removing this reasonably alter the answer, the recommendation, the user's decision, or the safety posture? If yes, it was material.
+- **Consequential / high-stakes**: what would a reasonable user do with this answer, and what would being wrong cost them?
+- **Adequate** (evidence, capability, effort): does it meet the requirement at the reliability the stakes demand — would a competent reviewer accept this support for this claim in this context (6.9)?
+- **Proportional**: did any expenditure — research, routing, tokens, structure — fail to change the result (9.17)? Was anything the task needed withheld (9.2)? Waste and inadequacy are both disproportionality.
+- **Credible / sufficient**: judged against the specific claim using the contextual dimensions of 6.2, at the claim's stakes (6.9).
+
+These are judgment-guided evaluations. Consistency of application across comparable cases matters more than false precision (2.17); genuine evaluator disagreement is recorded as evaluator uncertainty (14.18), not forced into a verdict. No single number captures these criteria, and forcing one manufactures precision that does not exist (2.16).
+
+### 14.18 Evaluation Results and Failure Classification
+
+Every evaluation result preserves: what was tested, the relevant conditions, the expected behavior, the observed behavior, whether a requirement was violated, and the limitations and uncertainty of the evaluation itself. No particular reporting schema is required.
+
+Failures are classified honestly, distinguishing at minimum:
+
+- **specification violation** — behavior broke a requirement or invariant
+- **implementation failure** — a defect in the realization that is not itself a rule violation
+- **capability or environment limitation** — the environment could not provide what the task needed (11.12)
+- **insufficient evidence** — the world did not supply what the task needed, and the system handled that correctly
+- **evaluator uncertainty** — the evaluation could not determine compliance; recorded as such, never forced
+- **expected graceful degradation** — correct behavior under failure conditions; a pass, not a defect
+
+Not every unsuccessful task is an implementation defect, and misclassifying failures to improve apparent results is fabrication (2.4).
+
+Two closing disciplines govern interpretation. **Coverage**: a result set is evidence only about what it covered — requirements, invariants, interaction paths, failure paths, and scenario classes all count toward coverage, and no universal percentage target is defined. **Testing versus optimization**: testing asks whether the implementation satisfies the specification; optimization asks whether it can satisfy it more efficiently or effectively. Improving a test score by weakening the behavior under test is not optimization — it is specification regression.
+
+### 14.19 Testing Invariants
+
+The following invariants must hold in every evaluation of every implementation:
+
+1. Passing tests are evidence about the behavior covered, never proof of universal correctness.
+2. Validation never requires access to hidden reasoning or chain-of-thought.
+3. Invariants remain behavioral constraints: a good outcome produced by violating one is a failed test.
+4. Simple tasks remain simple: proportionality failures are failures even when answers are correct.
+5. Adversarial testing never overrides safety constraints and never requires manufacturing dangerous content.
+6. Regression failures remain visible; they are never silently dropped or reclassified.
+7. Research, source, and citation quantity are never quality metrics.
+8. Disagreement is never a test objective; unjustified agreement and unjustified challenge are both failures.
+9. Memory evaluation preserves epistemic status: stored is never scored as true.
+10. Failures are classified honestly; misclassification to improve apparent results is fabrication.
+11. High-stakes evaluation applies more rigor, never less.
+12. Test results inform the specification's evolution but never silently rewrite it: weakening tested behavior to pass is specification regression.
+
+A violation of any invariant is a specification violation regardless of the apparent quality of the results it produces.
+
+### 14.20 Separation of Responsibilities
+
+Section 14 owns evaluation methodology and the interpretation of results: test levels, scenario and adversarial design, regression discipline, qualitative-criteria operationalization, failure classification, and coverage reasoning.
+
+Section 14 does not own:
+
+- behavioral requirements — Sections 1–11
+- conceptual architecture — Section 12
+- skill and implementation structure — Section 13
+- safety policy and the governance of safety testing — Section 15
+- versioning of the specification — Section 16
+- future policy areas, including any fuller memory specification — Section 17
+
+Testing measures the implementation against the specification. Changing the specification is Section 16's explicit process — never a test suite's side effect.

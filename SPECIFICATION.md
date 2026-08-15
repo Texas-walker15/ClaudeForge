@@ -1802,3 +1802,204 @@ Section 9 does not own:
 - safety implementation — Section 15
 
 Like Section 6, this section is a standard applied by other components wherever information is retained or reduced. The standard must not drift between its points of application (2.17), and no component may bypass it for local convenience.
+
+## 10. Model-Aware Optimization
+
+ClaudeForge runs on underlying models whose capabilities differ. This section defines how the framework adapts work to those differences — capability assessment, model selection, routing, escalation, fallback — while preserving Model Independence (2.14).
+
+Its central principle: **model awareness is an optimization capability, not an epistemic authority.** Capability determines which model performs the work; evidence, reasoning, and the standards of Sections 5–8 determine what is true. No model is "more correct" because it is considered more capable.
+
+This section is behavioral and abstract. It names no models, providers, APIs, or platforms, defines no routing algorithms or thresholds, and remains valid if every underlying model is replaced.
+
+### 10.1 Purpose and Scope
+
+This section owns capability-aware allocation: assessing what available models can do, matching task requirements to capabilities, routing work, escalating and de-escalating, substituting on failure, and weighing efficiency among adequate options.
+
+It operates on the compiled task — its requirements, constraints, classification, and complexity estimate (3.8, 3.10, 3.13). It does not reinterpret the task, and it defers task understanding, response behavior, research execution, evidence standards, truth decisions, neutrality, context policy, architecture, testing, and safety to their owning sections (10.20).
+
+### 10.2 Model Independence
+
+Model Independence (2.14) is this section's governing constraint: ClaudeForge's behavioral principles apply identically on every supported model. This section adapts *execution* to capability; it never adapts *standards*.
+
+Capabilities are described abstractly. No behavioral requirement in this specification may reference a specific model, provider, version, or ranking, and the specification must survive the total replacement of every underlying model. Model-specific details live in the configuration and implementation layers (Sections 12 and 13) and must not leak upward into behavioral requirements (10.17).
+
+### 10.3 Capability Awareness
+
+Routing decisions rest on awareness of abstract capability dimensions, including:
+
+- reasoning capability — the complexity of inference a model handles reliably
+- context capacity (9.15)
+- tool-use capability
+- research and retrieval access
+- multimodal input and output support
+- instruction-following fidelity
+- latency and resource characteristics
+
+For each dimension, the system distinguishes **known capability**, **known limitation**, and **uncertain capability**. An uncertain capability must never be silently assumed to exist (2.4): uncertainty is resolved conservatively, or discovered during execution and handled as failure (10.13, 10.18). Claims about what a model can do are subject to No Fabrication like any other claims.
+
+### 10.4 Capability Matching
+
+The task defines what is required; matching pairs those requirements with available capability.
+
+**Adequacy is the criterion.** A model is adequate when it can meet the task's requirements and constraints at the reliability the task warrants (2.9). Matching seeks adequacy, not maximality:
+
+- A model more capable than the task requires is not thereby the correct choice (10.16).
+- A model below adequacy is not an acceptable choice for the requirements it cannot meet (10.13 governs what happens when nothing adequate is available).
+
+Requirements drive matching — never model prestige, familiarity, or novelty.
+
+### 10.5 Task-to-Model Routing
+
+Routing decides which available capability performs which work. It is an allocation decision, not an epistemic one: routing does not decide whether a claim is true, whether evidence suffices, whether a source is authoritative, whether a topic is treated neutrally, or whether a safety constraint applies. Those decisions belong to Sections 5–8 and 15 and are identical regardless of where work runs.
+
+Routing may use the task's classification (3.8) and complexity estimate (3.10) as inputs. Routing decisions are internal orchestration and are not exposed to the user by default (4.16).
+
+### 10.6 Complexity-Aware Routing
+
+The complexity and effort estimate (3.10) informs how much capability a task warrants (2.9): simple tasks are correctly served by lighter adequate capability; difficult or high-reliability tasks may justify stronger capability.
+
+Two proportionality rules bound this:
+
+- A harder task justifies more *appropriate* capability allocation; it does not automatically justify maximum model usage (2.20).
+- The routing decision itself must remain proportional: a trivial request must not trigger elaborate routing deliberation. Routing overhead that exceeds its benefit is waste (9.17).
+
+### 10.7 Research and Tool Capability
+
+Models differ in tool use and research access (2.14). A task whose requirements depend on research (3.9) or tool capability must be routed to capability that has it — or the gap must be handled explicitly through fallback or degradation (10.13, 5.16).
+
+Absent capability is never papered over: research that could not be performed is not presented as performed (2.4), and a model without retrieval access answering from internal knowledge is labeled as such (5.17).
+
+### 10.8 Context Capacity
+
+Context capacity varies by model and environment (9.15). Routing considers whether the task's material context — requirements, constraints, epistemic structure, and needed evidence (9.5) — fits the candidate's capacity at the required fidelity.
+
+When capacity is tight, Section 9 governs reduction (9.14–9.16). Routing interacts with it in both directions: moving to higher-capacity capability may be preferable to a material loss of context, and lower-capacity capability is entirely adequate when the material context fits. No specific window size is assumed.
+
+### 10.9 Reasoning Capability
+
+Tasks whose correctness depends on complex reasoning warrant reasoning capability adequate to that demand (2.1, 2.9): preferring stronger capability over a confidently wrong result is the correct trade where the difference is material.
+
+Reasoning capability confers no epistemic authority. A more capable model's unsupported claim is still unsupported (2.5); its conclusions face the same evidence standards (Section 6), the same challenge rules (Section 7), and the same neutrality requirements (Section 8) as any other model's.
+
+### 10.10 Multimodal Capability
+
+When a task involves non-text modalities, routing considers modality support like any other capability dimension.
+
+If required modality support is absent, the system degrades honestly (10.13, 10.18): it states what it cannot process and works with what it can. It must never fabricate an interpretation of content it could not actually process (2.4).
+
+Where the task involves no such content, multimodal capability is irrelevant to routing and confers no general preference.
+
+### 10.11 Model Escalation
+
+Escalation moves work to stronger capability. It is justified when:
+
+- the task's requirements exceed the current capability, known in advance or discovered during execution
+- the required reliability demands more than the current capability delivers (2.9)
+- repeated failure indicates the current capability is inadequate (10.18)
+
+Escalation is not justified by task difficulty alone without an identified capability gap, by the prestige of a stronger option, or by mere availability. Unnecessary model escalation is named waste by 2.20. Every escalation preserves the task intact (10.14, 10.15).
+
+### 10.12 Model De-escalation
+
+De-escalation is the symmetric case: when work — a whole task or a subtask — does not need the current capability level, routing it to lighter adequate capability is correct behavior (2.9, 2.13), not a compromise.
+
+De-escalation is bounded by adequacy: savings never justify capability knowingly below the task's requirements (10.16). Splitting a task to route simple subtasks to lighter capability is legitimate only when the split itself does not cost more than it saves (2.20).
+
+### 10.13 Fallback and Substitution
+
+When a selected model is unavailable, degraded, or failing, the system substitutes the best adequate available capability.
+
+When no adequate capability is available, consistent with 2.19:
+
+- Requirements are not silently lowered to fit what remains.
+- The system proceeds with the best available capability and acknowledges the gap when it is material to how the user should treat the result (4.17).
+- Fabricating the missing capability's results is prohibited (2.4).
+
+Substitution and fallback preserve the task in full (10.14, 10.15). Persistent failure across capabilities is handled as routing failure (10.18).
+
+### 10.14 Requirement Preservation
+
+Across every routing event — selection, escalation, de-escalation, fallback, substitution — the task travels intact:
+
+- objective, requirements, and success conditions (3.6)
+- constraints, with their explicit/inferred/uncertain distinctions (3.5)
+- research and evidence requirements (3.9), and citation obligations (Section 6)
+- safety and higher-priority constraints, which bind on every model without exception (2.18)
+
+A model transition must not silently reset, drop, weaken, or reinterpret any of these. If a transition genuinely cannot preserve a requirement, that is a degradation event to be surfaced (10.18), not an editing opportunity.
+
+### 10.15 Epistemic Continuity
+
+Epistemic status (3.12, 5.17) crosses model boundaries unchanged: verified findings remain verified with their support, uncertainty remains uncertainty, assumptions remain assumptions, and recorded conflicts remain conflicts.
+
+A model transition is not an epistemic event. Nothing becomes more or less supported because a different capability now processes it.
+
+If outputs from more than one model inform a task, agreement between models is not independent evidence: models can share training origins, biases, and failure modes, so inter-model agreement must not be treated as corroboration or proof — the logic of 6.6 applies. Evidence evaluation remains with Sections 5–7.
+
+### 10.16 Efficiency and Cost
+
+Cost, latency, and resource use are optimization variables. Among options that are all adequate to the task's requirements, they are legitimate deciders (2.9, 2.13) — choosing the cheaper or faster adequate option is good engineering.
+
+They are never more than that:
+
+- Cost or latency must not justify capability knowingly inadequate for the task's reliability requirements — that inverts the priority hierarchy of Section 1 (9.18).
+- Maximum capability must not be used without a meaningful benefit — expense without effect is waste (9.17).
+
+Cheaper is not better; stronger is not better. Adequate, at the lowest cost that stays adequate, is better.
+
+### 10.17 Model-Specific Optimization
+
+Adapting *how* work is presented to a particular model — phrasing, structure, decomposition — to obtain reliable behavior from it is legitimate optimization, provided the behavioral standards are untouched: the same truth standards, evidence standards, neutrality, epistemic labeling, and safety constraints apply on every model (2.14, 2.17).
+
+Model-specific adaptations are confined to the configuration and implementation layers (Sections 12 and 13). They must not leak into this specification's behavioral requirements, must not change what the user is promised, and must not vary the standards a response is held to depending on which model produced it.
+
+### 10.18 Routing Failure and Graceful Degradation
+
+Routing itself can fail: no adequate capability exists, capability uncertainty cannot be resolved, or models fail repeatedly. Consistent with 2.19:
+
+- No capability and no result is fabricated.
+- The limitation is stated when it is material to the user (4.17).
+- The best safe, useful result achievable with available capability is delivered — qualified, partial, or reduced as honesty requires (5.16, 9.16).
+- A task that genuinely cannot be completed at its required reliability with available capability is reported as such, together with what can be done instead.
+
+Degradation is explicit, never silent: the user must never receive a quietly weaker result presented as the fully capable one.
+
+### 10.19 Model-Aware Optimization Invariants
+
+The following invariants must hold in every implementation and environment:
+
+1. Never let model selection or routing override safety or higher-priority constraints.
+2. Never treat model capability, prestige, or agreement between models as evidence of truth.
+3. Preserve the task's objective, requirements, constraints, and success conditions across every model transition; a switch must never silently reset the task.
+4. Preserve epistemic status and material context across every model transition.
+5. Never silently assume an uncertain capability exists.
+6. Never route work to capability known to be inadequate for its requirements.
+7. Never escalate without an identified capability-based reason; simple tasks receive no unnecessary model complexity.
+8. Give difficult tasks capability sufficient for their requirements.
+9. Never let cost or latency reduce reliability below what the task requires.
+10. Never use maximum capability without a meaningful benefit.
+11. Apply the same behavioral standards — truth, evidence, neutrality, safety — on every model.
+12. On model failure or unavailability, degrade honestly: no fabricated capabilities, no fabricated results.
+13. Keep model-specific behavior out of the model-independent specification.
+14. Never expose chain-of-thought, on any model.
+
+A violation of any invariant is a specification violation regardless of the quality of the downstream outcome.
+
+### 10.20 Separation of Responsibilities
+
+Section 10 owns model capability assessment, capability matching, routing, escalation and de-escalation, fallback and substitution, and model-aware efficiency decisions.
+
+Section 10 does not own:
+
+- task understanding and compilation — Section 3
+- response behavior — Section 4
+- research execution — Section 5
+- source quality and citation standards — Section 6
+- truth and challenge decisions — Section 7
+- bias and neutrality — Section 8
+- token and context policy — Section 9
+- concrete architecture, configuration, and implementation — Sections 12 and 13
+- testing and operational thresholds — Section 14
+- safety implementation — Section 15
+
+Routing decides which model does the work. Every other section decides how the work is judged — and judges it identically on every model.

@@ -2987,3 +2987,154 @@ Section 15 does not own:
 - implementation of concrete security mechanisms — the implementation layer, within 13.6's precedence
 
 Safety is the one layer to which everything else defers, and the one layer that defers to nothing below the host itself.
+
+## 16. Versioning
+
+This section governs how the ClaudeForge specification and its implementations evolve: what counts as a change, of which kind, under whose authority, with what validation, and with what record.
+
+Its central rule: **if the expected behavior changes, the specification has changed — regardless of where the change was introduced.** Conversely, an implementation change that preserves the specified behavior is not thereby a specification change. And throughout: **versioning records change; it does not grant authority to change the specification.**
+
+### 16.1 Purpose and Scope
+
+This section owns the change and version governance layer: the identity of the specification, its relationship to implementation versions, the classification of changes, change authority, traceability, reversion, and the validation gate a change must pass.
+
+It does not own the content it versions — Sections 1–15 remain the behavioral authority — and it introduces no tooling: no version-control system, release process, or automation is mandated by this section.
+
+### 16.2 Specification Identity and Version
+
+The specification is identified by the version and status declared in its header. A specification version identifies one specific set of behavioral requirements: two artifacts bearing the same version impose identical requirements, and any change to normative content produces a new version.
+
+The status marker (for example, Draft) declares maturity. No particular numbering semantics are mandated beyond what governance requires: versions must be distinguishable, orderable, and able to signal whether a change is breaking (16.7).
+
+### 16.3 Implementation Versions
+
+Implementations version independently (13.17). The binding link is the declaration: each implementation declares which specification version it realizes, and that declaration is a compatibility claim subject to validation (16.13).
+
+Implementation versions may change freely for non-behavioral reasons (16.5); the declaration changes only when the realized behavior tracks a different specification version.
+
+### 16.4 Behavioral Changes
+
+A behavioral change is any change to the behavior an implementation is expected to exhibit under this specification — wherever it is introduced: in the specification text, the implementation, configuration, skill resources, memory handling, routing, or deployment.
+
+Every behavioral change is a specification change. It requires the change process of 16.11, the validation of 16.18, and a new specification version. Behavioral drift without a version change is a violation (2.17, 13.17), whatever mechanism carried it.
+
+### 16.5 Non-Behavioral Changes
+
+Changes that preserve specified behavior — refactoring, performance work, repackaging (Section 13), internal reorganization — are implementation-version events only. The test is behavioral equivalence at the contracts (12.17): if the swap leaves behavior under Sections 1–15 unchanged, the specification is untouched.
+
+The conservative default: **when it is uncertain whether a change is behavioral, it is treated as behavioral until validation shows otherwise.**
+
+### 16.6 Compatibility
+
+An implementation is compatible with a specification version when it satisfies that version's requirements, as evaluated under Section 14. Compatibility claims are claims: they rest on evidence with honest scope — passing evaluations are evidence of compatibility for what they covered, never proof of universal conformance (14.19).
+
+Compatibility does not transfer between versions: realizing version X establishes nothing about version Y.
+
+### 16.7 Breaking Changes
+
+A breaking change removes, weakens, or contradicts an existing requirement, so that previously conforming behavior or reliance becomes non-conforming.
+
+Breaking changes are explicit: identified as breaking, reflected distinguishably in the version, and accompanied by a statement of what previously valid behavior is no longer valid. A breaking change disguised as a clarification or an addition is a governance violation.
+
+### 16.8 Additive Changes
+
+Additive changes introduce new requirements or capabilities without invalidating existing conforming behavior. They are still specification changes — versioned, traceable, and validated.
+
+Additive is not automatically harmless: every addition is checked for contradiction against the existing whole before adoption, under the same cross-section consistency discipline that built Sections 1–15.
+
+### 16.9 Clarifications vs. Behavioral Changes
+
+A clarification that changes no reasonable interpretation of a requirement is editorial: it may be recorded without behavioral significance.
+
+A "clarification" that shifts how a requirement is reasonably interpreted changes expected behavior and is a behavioral change (16.4), whatever it is called. The test is conformance-preserving: would every implementation that reasonably conformed before the change still conform after it? If interpretation moves, the answer is no — and the label does not decide the classification; the consequences do.
+
+### 16.10 Correction of Specification Defects
+
+The specification can itself be defective: contradictory, ambiguous, or impossible to satisfy. Corrections are specification changes under the full process, and they identify what was defective and what conforming implementations should do about it.
+
+A discovered defect is not a license to improvise: implementations surface the defect rather than silently resolving it locally — the same stop-and-report discipline this specification applies everywhere else. The correction happens in the specification, once, for everyone.
+
+### 16.11 Change Authority
+
+Specification changes are deliberate acts of the project's specification authority. Proposals may originate anywhere — test findings (14), implementation experience (13), defect reports (16.10) — but adoption is an explicit decision at the specification level.
+
+No implementation, test suite, configuration, memory content, resource edit, or deployment activity acquires specification-change authority by acting (13.19, 14.19). Versioning records what was decided; it never substitutes for the decision.
+
+### 16.12 Traceability
+
+Every specification change is traceable: what changed, its classification (behavioral, additive, breaking, clarification, defect correction), why it was made, and the version boundary it crosses.
+
+The change record must make it possible to determine which requirements applied at any given version. No specific tooling or record format is mandated; the obligation is the information, not the mechanism.
+
+### 16.13 Specification–Implementation Version Relationship
+
+The declaration of 16.3 binds the two version lines together. An implementation update either preserves its declaration — a non-behavioral change, or a behavioral fix bringing it closer to the declared version — or moves the declaration to the specification version it now realizes.
+
+Divergence without an updated declaration is a violation (13.19): an implementation may not drift away from its declared specification while continuing to claim it.
+
+### 16.14 Rollback and Reversion
+
+Reverting an implementation restores prior implementation behavior; it does not revert the specification. After any implementation rollback, the declaration is re-verified: the rolled-back implementation realizes whichever specification version it actually conforms to.
+
+Reverting the specification is itself a specification change: a new version that restores prior requirements, adopted and validated like any other change. The change record preserves that both the change and its reversal occurred; versioning does not erase history to pretend a change never happened.
+
+### 16.15 Configuration and Deployment Changes
+
+Configuration may vary only what the specification leaves open (13.15). A configuration change that alters expected behavior beyond that space is a behavioral change wearing configuration clothes — 16.4 applies in full, and "merely configuration" is not an exemption category.
+
+Deployment state — which implementation version runs where — is operational, not specification. But deploying a behaviorally different implementation is a behavioral change event for that deployment, subject to the same declaration and validation obligations.
+
+### 16.16 Skill and Resource Changes
+
+Skill instructions and resources are implementation content (Section 13). Edits that preserve behavior are implementation-version events; edits that alter behavior are specification changes regardless of arriving as "just a resource edit" — content without authority (13.6) has no change authority either.
+
+Edits to normative content (13.5) are presumptively behavioral under 16.5's conservative default.
+
+### 16.17 Safety-Related Changes
+
+Changes touching safety behavior receive the highest scrutiny. A safety requirement is never weakened silently or as a side effect of another change; a change that would weaken one must be explicit, justified, and consistent with Section 15 and the instruction hierarchy (15.3) — the specification cannot version itself above the host's policies.
+
+Validation of safety-related changes includes safety evaluation under 15.17, in both directions: the changed behavior neither under-enforces nor over-refuses.
+
+### 16.18 Validation of Changes
+
+A behavioral change is behaviorally complete only after validation against Section 14:
+
+- new and changed requirements receive evaluation coverage (14.8, 14.4)
+- existing requirements are regression-tested (14.10) — the change breaks only what it explicitly intends to change
+- breaking changes are verified to break nothing beyond their stated scope
+
+Until validated, an adopted change is exactly that — adopted but unverified — and its status is stated honestly (2.16, applied to the project itself). Weakening tested behavior to make validation pass remains specification regression, not validation (14.18).
+
+### 16.19 Versioning Invariants
+
+The following invariants must hold for every change to ClaudeForge:
+
+1. If expected behavior changes, the specification has changed — regardless of where the change was introduced.
+2. An implementation change that preserves specified behavior is not thereby a specification change.
+3. Versioning records change; it never grants authority to change the specification.
+4. No implementation, configuration, resource, memory, routing, or deployment mechanism silently redefines the specification.
+5. Two artifacts bearing the same specification version impose identical behavioral requirements.
+6. Breaking changes are explicit; they are never disguised as clarifications or additions.
+7. A clarification that shifts reasonable interpretation is a behavioral change, whatever it is called.
+8. Every specification change is traceable: what, of which kind, why, and across which version boundary.
+9. Reverting an implementation does not revert the specification; reverting the specification is itself a recorded change.
+10. A behavioral change is complete only after Section 14 validation.
+11. Safety requirements are never weakened silently or by versioning side effect; Section 15 and the instruction hierarchy govern safety changes.
+12. When it is uncertain whether a change is behavioral, it is treated as behavioral until shown otherwise.
+
+A violation of any invariant is a specification violation regardless of the quality of the downstream outcome.
+
+### 16.20 Separation of Responsibilities
+
+Section 16 owns change and version governance: specification identity, change classification, change authority and record, the specification–implementation version relationship, reversion principles, and the validation gate.
+
+Section 16 does not own:
+
+- the behavioral content it versions — Sections 1–15
+- testing methodology, which is the validation authority for changes — Section 14
+- safety policy, which governs safety-related changes — Section 15
+- implementation and skill structure — Section 13
+- future extensions — Section 17
+
+Sections 1–15 define what ClaudeForge is. Section 16 governs how that may change. It remembers every change and authorizes none.

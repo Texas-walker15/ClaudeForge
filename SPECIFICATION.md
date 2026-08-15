@@ -2192,3 +2192,212 @@ Section 11 does not own:
 - safety and security implementation — Section 15
 
 Section 11 is one environment's profile of ClaudeForge. The framework is defined by Sections 1–10; other environment variants may stand beside this one, subject to the same rule that a variant constrains execution and never redefines the specification.
+
+## 12. Architecture
+
+Sections 1–11 defined what ClaudeForge must do. This section defines the conceptual architecture that makes those behaviors implementable: the major components, their responsibilities, their boundaries, and the information that flows between them.
+
+This is conceptual architecture, one level below behavior and one level above implementation. It names no programming languages, frameworks, schemas, APIs, or deployment structures — those belong to Sections 13 and beyond. It is the minimum structure necessary to realize Sections 1–11 without diluting them.
+
+### 12.1 Purpose and Scope
+
+This section defines the conceptual components of ClaudeForge, assigns each responsibility one owner, fixes the boundaries and contracts between components, and states how information, failures, and degradation move through the system.
+
+Four kinds of architectural element are distinguished throughout:
+
+- **Conceptual component** — a cluster of responsibility (for example, the Task Compiler).
+- **Implementation component** — a concrete realization of one or more conceptual components (Sections 13+).
+- **Interface / boundary** — a controlled handoff with a defined contract (for example, the internal task representation).
+- **Policy / standard** — rules applied at many points (for example, Sections 6, 8, 9). A policy does not automatically become a standalone service; it becomes an obligation on every point that applies it.
+
+### 12.2 Architectural Model
+
+ClaudeForge is a behavioral orchestration framework over an underlying model — not a monolithic model and not a single component. Conceptually it comprises:
+
+- **Input / Request Interface** — receives the request and environment signals (12.5)
+- **Task Compiler** — Section 3 (12.6)
+- **Internal Task Representation** — the compiler's output contract (3.13); an interface, not a component
+- **Research Engine** — Section 5 (12.7)
+- **Source / Evidence Evaluation** — Section 6; a standard applied at points of use (12.7)
+- **Truth & Challenge Protocol** — Section 7 (12.8)
+- **Bias & Neutrality Protocol** — Section 8; a cross-cutting standard (12.9)
+- **Token & Context Efficiency Policy** — Section 9; a cross-cutting policy (12.10)
+- **Model Router** — Section 10 (12.11)
+- **Environment Adapter** — Section 11 (12.12)
+- **Response Behavior Layer** — Section 4 (12.13)
+- **Coordination** — sequencing and conditional activation, defined by this section (12.15)
+- **Validation / Testing boundary** — where Section 14 attaches (12.20)
+- **Safety / Security boundary** — Section 15; cross-cutting and non-bypassable (12.19)
+
+The nominal flow — input → compilation → research → evaluation → challenge → response — is a description of dependency order, **not a mandatory pipeline**. Stages activate only when the task requires them (2.9, 2.20): a trivial request is minimal compilation plus response; a research-heavy task activates the full chain; a failed research path degrades honestly and continues. Conditional activation is the architectural realization of Proportionality.
+
+### 12.3 Component Boundaries
+
+A boundary exists where it protects a meaningful responsibility or invariant — and only there. Boundaries that protect nothing are cost (2.20); this architecture defines no micro-components for sophistication's sake.
+
+A boundary is a conceptual contract: what crosses it, in which direction, and what must be preserved in transit. Boundaries are not necessarily process boundaries — an implementation may realize several conceptual components in one runtime unit, provided the ownership of decisions and the contracts between responsibilities remain distinct and checkable. Combining components is an implementation choice; blurring their decisions is a specification violation.
+
+### 12.4 Responsibility Ownership
+
+Every rule has one authoritative owner: the section that defines it. Other components apply the rule at their point of use but never redefine it, and the rule must not drift between points of application (2.17, 6.20, 9.20).
+
+Decision ownership is fixed:
+
+- the **Task Compiler** owns task structure and epistemic labeling (3.12, 3.13)
+- the **Research Engine** owns research execution and stopping (5.2, 5.15)
+- **Source / Evidence Evaluation** owns evidence quality and support relationships (6.9)
+- **Truth & Challenge** owns whether and how strongly claims are challenged (7.2, 7.16)
+- **Bias & Neutrality** owns systematic fairness (8.1)
+- the **Token & Context Policy** owns retention, compression, and discard (9.1)
+- the **Model Router** owns model allocation (10.5)
+- the **Environment Adapter** owns availability, authorization, and environment capability (11.4)
+- the **Response Behavior Layer** owns presentation (4.19)
+- the **Safety boundary** binds all of them (2.18)
+
+No component silently takes ownership of another's decisions — not by convenience, not by implementation shortcut, not by failure.
+
+### 12.5 Input and Request Boundary
+
+The input boundary receives the user's request and the environment's signals and delivers them to the Task Compiler.
+
+It interprets nothing, judges nothing, and applies no policy: it is a boundary, not a brain. Intent extraction belongs to the compiler (3.3); capability and availability signals come from the Environment Adapter (12.12). How input concretely arrives in a given environment is implementation detail (Sections 13+).
+
+### 12.6 Task Compilation Boundary
+
+The Task Compiler (Section 3) transforms the request into the internal task representation (3.13) — the controlled handoff every downstream component consumes.
+
+The representation carries only what downstream components materially need (3.14, 9.10), and its lifecycle follows the task: created at compilation, updated as relevance shifts (9.4), never retroactively rewritten to change what was asked. Its visibility rules are architecturally enforced: it is internal state, exposed only under the conditions of 3.13, and it contains no hidden reasoning or chain-of-thought.
+
+### 12.7 Research and Evidence Boundary
+
+Two responsibilities meet here and remain distinct:
+
+- The **Research Engine** (Section 5) executes research: triggering, strategy, discovery, verification, stopping. Its output contract is the findings structure (5.18), carrying findings, sources, epistemic status, conflicts, and gaps.
+- **Source / Evidence Evaluation** (Section 6) is the standard by which sources and support relationships are judged — applied by the Research Engine during research (5.8) and by the Response Behavior Layer at citation time (4.7).
+
+Research discovers and verifies; evaluation judges quality and support. Neither redefines the other, and findings cross this boundary with status intact (5.17).
+
+### 12.8 Truth and Challenge Boundary
+
+The Truth & Challenge Protocol (Section 7) consumes the compiler's epistemic labels (3.12), the Research Engine's findings (5.18), and evidence evaluations (6.9). It produces challenge decisions: what is corrected, qualified, or disputed, and at what strength (7.16).
+
+Its interfaces are explicit: it may request evidence through the research trigger contract (5.2, 7.12), and it hands its decisions to the Response Behavior Layer for presentation (4.9). The challenge decision is its alone; the presentation of that decision is not.
+
+### 12.9 Bias and Neutrality Boundary
+
+The Bias & Neutrality Protocol (Section 8) is not a pipeline stage; it is a cross-cutting standard governing every point where content is selected, framed, weighted, or represented — research selection (5.7), payload condensation (9.11), response composition (4.3, 4.6).
+
+Architecturally, neutrality is a property the system must not violate rather than a work item every task must execute. Tasks with no contested content incur no neutrality processing; tasks with contested content are governed wherever selection and framing happen (8.20).
+
+### 12.10 Context and Token Boundary
+
+The Token & Context Efficiency Policy (Section 9) is a cross-cutting policy applied at every point where information is retained or reduced: compile-time selection (3.2, 3.4), research payload condensation (5.18), context pressure (9.15).
+
+The architectural obligation is uniformity: every reduction point applies the same standard, none may bypass it locally (9.20), and reductions happen only at declared points under the policy — never as side effects of moving information between components (12.14).
+
+### 12.11 Model Routing Boundary
+
+The Model Router (Section 10) allocates work to models within the envelope the Environment Adapter reports (11.18). It consumes the task's requirements and complexity estimate (3.10, 3.13) and produces allocation decisions: selection, escalation, de-escalation, substitution.
+
+Its boundary is strict in both directions: it makes no epistemic decisions (10.5), and no other component makes allocation decisions. Every transition it causes preserves the task and its epistemic status in full (10.14, 10.15).
+
+### 12.12 Environment Boundary
+
+The Environment Adapter isolates everything environment-specific (Section 11): capability detection, tool and integration availability, authorization, persistence, local resource access.
+
+Core components interact with abstract capabilities through the adapter; they never depend on environment internals. Supporting a new environment means providing a new adapter — the core and the behavioral rules do not change (11.3, 11.20).
+
+The adapter also enforces the model/environment separation architecturally: the Router asks what models can do; the adapter answers what this environment provides (11.4). Keeping those as separate questions with separate owners is what makes fallback attribution correct (11.18).
+
+### 12.13 Response Generation Boundary
+
+Three things are architecturally distinct:
+
+- **internal processing** — everything upstream: representations, findings, decisions, state
+- **final response generation** — the Response Behavior Layer applying Section 4 to assemble the answer
+- **user-visible presentation** — what actually reaches the user
+
+The Response Behavior Layer is the **sole user-visible exit**: no other component emits output to the user, including clarification questions (4.12) and degradation disclosures (4.17), which exit through it. Internal state — task representations, routing decisions, processing narration, hidden reasoning — crosses into visibility only under the rules of 3.13 and 4.16, and chain-of-thought never does.
+
+### 12.14 Information Flow and State Preservation
+
+Handoffs are explicit contracts: the task representation (3.13), the findings structure (5.18), challenge decisions (12.8), allocation decisions (12.11). Whatever moves between components moves with its meaning intact.
+
+The following survive every handoff for as long as they remain material (9.13):
+
+- user requirements, constraints, and success conditions
+- assumptions and uncertainties (3.12)
+- evidence, findings, and source limitations (5.17, 6.8)
+- epistemic status and recorded conflicts (5.12)
+- challenge decisions and neutrality obligations
+
+No handoff is an epistemic event (10.15, generalized): information does not gain or lose status by moving between components. Reduction happens only under the Section 9 policy at declared points — never as a transport side effect.
+
+### 12.15 Component Interaction
+
+Components interact through their contracts, never through each other's internals (loose coupling). A component may be reimplemented freely while its contract holds (12.17).
+
+Coordination sequences and conditionally activates components according to the task's requirements (12.2): research activates on a confirmed trigger (5.2), challenge acts only on material problems (7.2, 7.3), routing deliberation stays proportional (10.6). A component not required by the task is not executed.
+
+Flows may iterate: a challenge may request research (7.12), research findings may update task state, and context relevance may shift (9.4). Iteration is bounded by the stopping conditions and proportionality rules of the owning sections (5.15, 7.16) — the architecture permits loops and forbids unbounded ones.
+
+### 12.16 Failure Isolation and Degradation
+
+Failure in one component degrades only what depends on it, where possible — and every failure path terminates in honesty, not fabrication:
+
+- Research failure produces labeled fallback, never fabricated evidence (5.16).
+- Routing failure degrades allocation, never truth standards (10.18).
+- Context pressure produces explicit, prioritized reduction, never silent loss of constraints (9.14–9.16).
+- Environment limitation surfaces as reported unavailability, never as a false claim about model capability (11.12, 11.18).
+
+Degradation composes: each layer's honest degradation feeds the Response Behavior Layer's partial-result presentation (4.17), so the user receives a reduced result described as reduced. Architecturally, fabrication must be the unavailable path — every boundary offers a defined failure output, so no component ever needs to invent success.
+
+### 12.17 Modularity and Replaceability
+
+Replaceable without rewriting behavior: any underlying model (2.14, Section 10), any research mechanism, any environment adapter (11.20), any implementation component realizing a conceptual one.
+
+Not replaceable: the behavioral standards of Sections 1–11. They are the specification, not modules.
+
+The replaceability test is behavioral: swapping an implementation while its contracts hold must leave the system's behavior under Sections 1–11 unchanged. If a swap changes behavior, either the contract was violated or the old implementation was leaking beyond its boundary.
+
+### 12.18 Policy, Mechanism, and Implementation Separation
+
+Three levels, with authority flowing strictly downward:
+
+1. **Policy and standards** — Sections 1–11: what must be true.
+2. **Conceptual architecture** — this section: who owns which decision, and how information flows.
+3. **Implementation** — Sections 13+: how it is concretely realized.
+
+Nothing flows upward. Implementation constraints must not rewrite architecture, and architectural convenience must not rewrite behavior (11.3, generalized). Every mechanism chosen at level 3 must be traceable to a responsibility defined here; a mechanism serving no specified responsibility is overengineering (2.20).
+
+Validation attaches at the boundaries: contracts and invariants are what testing checks against. The standards and thresholds of testing belong to Section 14.
+
+### 12.19 Architectural Invariants
+
+The following invariants must hold in every implementation and environment, and are checkable against the architecture:
+
+1. Every responsibility has exactly one authoritative owner; no component assumes another's decisions, silently or otherwise.
+2. Every handoff preserves requirements, constraints, assumptions, uncertainties, evidence, source limitations, and epistemic status; no handoff is an epistemic event.
+3. No component fabricates evidence, results, or capability; every boundary defines a failure output, and failure surfaces as failure.
+4. Model capability and environment capability remain separate architectural concerns with separate owners.
+5. Degradation is explicit and composes across layers; partial results reach the user described as partial.
+6. Any model, research mechanism, environment adapter, or implementation component is replaceable without changing behavior under Sections 1–11.
+7. Simple tasks activate only the components they require; no subsystem executes when it serves no requirement of the task.
+8. Internal state crosses into user visibility only under the visibility rules (3.13, 4.16); the Response Behavior Layer is the sole user-visible exit, and chain-of-thought never crosses.
+9. Safety constraints bind every component on every path; no routing, delegation, or composition of components can bypass them.
+10. Cross-cutting standards (Sections 6, 8, 9) are applied uniformly at every point of use, without local drift or bypass.
+
+A violation of any invariant is a specification violation regardless of the quality of the downstream outcome.
+
+### 12.20 Separation of Responsibilities
+
+Section 12 owns the conceptual architecture: components, decision ownership, boundaries and contracts, information flow, interaction and activation, failure isolation, and replaceability.
+
+Section 12 does not own:
+
+- behavioral rules — Sections 1–11, which remain authoritative and are not modified by this section
+- concrete implementation and skill structure — Section 13
+- testing standards, methods, and thresholds — Section 14, which attaches at the boundaries this section defines
+- safety and security policy — Section 15, whose constraints this architecture guarantees cannot be bypassed but does not define
+
+The architecture exists to make Sections 1–11 implementable without diluting them. Where architecture and behavior appear to conflict, behavior wins — and the architecture is what must change.

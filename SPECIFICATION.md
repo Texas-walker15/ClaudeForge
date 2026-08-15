@@ -2401,3 +2401,182 @@ Section 12 does not own:
 - safety and security policy — Section 15, whose constraints this architecture guarantees cannot be bypassed but does not define
 
 The architecture exists to make Sections 1–11 implementable without diluting them. Where architecture and behavior appear to conflict, behavior wins — and the architecture is what must change.
+
+## 13. Skill Structure
+
+This section defines how the conceptual architecture of Section 12 is realized as a Claude skill: how ClaudeForge is packaged, loaded, activated, and integrated with memory, tools, configuration, and persistence.
+
+It is the first section permitted to describe concrete implementation structure, and it stays one abstraction level above implementation code: structural contracts, not files, syntax, or tutorials.
+
+Its central principle: **the skill structure is an implementation realization of the specification, not a second specification.** Packaging may determine how responsibilities are organized, loaded, and executed; it never redefines the behavioral requirements of Sections 1–12.
+
+### 13.1 Purpose and Scope
+
+This section governs the structure of ClaudeForge as a Claude skill: the roles of instructions and resources, precedence among implementation content, how conceptual components are realized, when resources load and activate, and the integration points for memory, tools, external resources, state, and configuration.
+
+Behavior remains owned by Sections 1–11 and the conceptual architecture by Section 12. This section owns only how those are carried into execution.
+
+### 13.2 Skill as the Implementation Boundary
+
+The Claude skill is the concrete packaging and execution boundary through which the ClaudeForge specification is made available to the underlying model: it carries the instructions and resources that realize the components of Section 12 inside a host environment (Section 11).
+
+The skill is how ClaudeForge is delivered, not what ClaudeForge is. The specification exists independently of any packaging, and other packagings realizing the same specification are equally valid ClaudeForge implementations (12.17, 13.18).
+
+### 13.3 Skill Instructions
+
+Skill instructions are the normative implementation content: they direct the model to behave according to Sections 1–11 within the architecture of Section 12.
+
+Instructions derive from the specification and defer to it. They may compress, order, and phrase requirements for reliable model behavior (10.17), and they should carry the minimum wording needed to do so (9.9) — but they must never weaken, extend, or contradict Sections 1–12. An instruction that conflicts with the specification is a defect in the instruction, and the instruction is what must change (12.20).
+
+### 13.4 Supporting Resources
+
+A skill may carry supporting resources — detailed procedures, reference documents, examples, templates — so that the always-active instructions stay small (9.9) while detail lives where it is consulted on demand (13.9).
+
+Resources are subordinate to instructions. The presence of content in a resource confers no authority on that content (13.6): resources elaborate the specification's requirements; they do not add to them.
+
+### 13.5 Knowledge and Reference Material
+
+Implementation content divides into:
+
+- **Normative material** — content that defines what must happen: the skill instructions, and any resource explicitly designated normative.
+- **Informational and reference material** — content that aids understanding or execution: background, explanations, examples.
+
+Reference material must not silently override normative rules. Where the two conflict, the normative content governs and the reference material is what gets corrected.
+
+Reference material is also not evidence: claims carried in skill resources have the epistemic status of curated reference content, not of externally verified findings, and are subject to Sections 5–6 when their accuracy materially matters to a task.
+
+### 13.6 Behavioral Rules and Instruction Precedence
+
+Precedence follows the authority direction fixed by 12.18, extended into the implementation:
+
+1. Safety requirements, system constraints, and higher-priority instructions (2.18)
+2. The behavioral specification — Sections 1–11
+3. The conceptual architecture — Section 12
+4. Skill instructions (13.3)
+5. Supporting resources designated normative (13.5)
+6. Informational and reference material
+7. Configuration and user preferences, within the bounds of 13.15
+
+Lower levels cannot weaken or contradict higher levels; conflicts resolve upward. No instruction, resource, or configuration may grant itself higher precedence than this ordering assigns it.
+
+### 13.7 Component Realization
+
+The conceptual components of 12.2 may be realized through any combination of skill instructions, supporting resources, context contents, tool invocations, and host-environment capabilities.
+
+There is no requirement of one file, resource, process, or runtime unit per conceptual component (12.3): implementations may combine or distribute realizations freely, provided each component's contracts hold and its decision ownership stays distinct and checkable. Combining is packaging; blurring decisions is a violation.
+
+### 13.8 Responsibility Mapping
+
+Every implementation element that makes a meaningful behavioral decision must have an identifiable conceptual owner from the ownership table of 12.4.
+
+This mapping is what makes the implementation reviewable and testable (Section 14): when behavior is wrong, the owning responsibility can be located; when an element has no identifiable owner, it either serves no specified responsibility — overengineering under 12.18 — or is exercising authority it does not have, which is a violation.
+
+### 13.9 Progressive Loading
+
+The skill is not a single permanently active block of context. Resources are loaded or consulted when the task needs them (9.3, 2.20); the always-active core is the minimum needed to preserve the invariants and reach the right resources at the right time.
+
+Loading is an efficiency decision under Section 9's policy, cutting both ways: loading everything for a trivial request is waste (9.17), and failing to load material a task genuinely requires is inadequacy (9.2). The structure must make both errors avoidable.
+
+### 13.10 Contextual Activation
+
+The conditional-activation rule of 12.2 and 12.15 binds the skill structure: activation follows the task's requirements as compiled (3.10, 3.14), and simple tasks must not be forced through unnecessary resources or subsystems.
+
+This is a structural obligation, not just a runtime preference: a skill structure in which trivial requests cannot avoid heavyweight machinery violates Minimum Necessary Complexity (2.20) by construction.
+
+### 13.11 Memory and Personalization Integration
+
+This subsection defines the integration point for persistent user memory, where the host environment provides persistence (11.9). It is an integration contract, not a memory specification.
+
+When supported, ClaudeForge may use: persistent cross-session user memory, explicit user-provided memories, inferred preferences, temporary contextual information, memory retrieval, correction, refinement, deletion, and long-term personalization.
+
+The constraints are fixed regardless of implementation:
+
+- Memory formation is deliberate: information does not become permanent merely because it appeared once.
+- Explicit memories and inferred memories remain distinguishable, mirroring the explicit/inferred discipline of 3.5.
+- Stored information retains its epistemic status (3.12, 11.9): a stored assumption is still an assumption, and remembering a claim is not verifying it.
+- Contradictory memories are not silently merged (9.6); the contradiction is preserved or resolved deliberately.
+- Personalization adapts presentation and preferences (4.15) — never truth standards, safety, neutrality, or challenge behavior.
+- Memory remains subject to user control — inspection, correction, and deletion — where the host supports it.
+
+Memory mechanisms not established elsewhere in this specification are not invented here; a fuller memory specification, if needed, is future work (Section 17).
+
+### 13.12 Tool and Capability Integration
+
+Tools are implementation capabilities in service of conceptual responsibilities: research tools serve Section 5, local resource access serves 11.6, and so on. Their availability flows through the Environment Adapter (11.5, 12.12).
+
+Tool use is governed by the owning sections' standards, and a tool is not an epistemic authority by virtue of being available or integrated: tool outputs are evidence exactly as strong as their sources under Section 6, and tool results are never fabricated (2.4). Integration convenience changes nothing about how outputs are judged.
+
+### 13.13 External Resource Boundaries
+
+External data — web content, connected services, user-supplied files — enters ClaudeForge through the rules already established: research and verification under Section 5, quality and citation under Section 6, user-provided status under 3.12 and 11.6.
+
+The skill boundary does not launder provenance: content gains no epistemic status by arriving through an integrated channel rather than an ad-hoc one. Queries to external services carry only what retrieval needs (5.5), and data-handling policy remains Section 15's.
+
+### 13.14 State and Persistence
+
+Four kinds of state are distinct, each with its own lifecycle:
+
+- **Transient execution state** — lives within a task or session and is assumed lost afterward (11.8).
+- **Persistent user memory** — exists only where the host provides it, under 13.11 and 11.9.
+- **Configuration and preferences** — 13.15.
+- **External knowledge and reference material** — 13.5.
+
+Persistence is never assumed merely because the skill can access information now (11.9). Epistemic rules apply to all four: stored is not verified, and each kind carries its status with it.
+
+### 13.15 Configuration and User Preferences
+
+Implementation configuration and user preferences may adjust what the specification leaves open: presentation defaults (4.15), resource activation choices, tool defaults, efficiency posture.
+
+They must not override normative requirements. No configuration or preference may disable truth standards, evidence standards, neutrality, safety, epistemic preservation, or any other obligation of Sections 1–12 (13.6). A preference that conflicts with a normative rule is not honored, and when the conflict is material to the user's expectations, it is surfaced rather than silently ignored (4.17).
+
+### 13.16 Failure and Degradation
+
+Implementation failure — a missing resource, a failed tool, unavailable memory, a broken integration — degrades along the chain already established: 2.19, 5.16, 9.16, 10.18, 11.13, 12.16. Successful execution is never fabricated, material limitations are surfaced (4.17), and the task continues usefully within what remains.
+
+One skill-specific rule: unloaded normative content does not suspend the specification. If a resource carrying normative detail cannot be loaded, that is a degradation event to surface — not permission to improvise the rules it contained. Accordingly, core invariants must not live only in optionally loaded resources (13.19).
+
+### 13.17 Versioning and Evolution
+
+The skill evolves. Two versions are distinct: the specification version (this document's) and the implementation version realizing it. An implementation declares which specification version it realizes.
+
+Implementation updates either preserve behavioral compatibility with the declared specification, or they change behavior — and a behavioral change is a specification change, made explicitly and versioned under Section 16, never introduced silently through an implementation update (2.17). Version-numbering policy belongs to Section 16.
+
+### 13.18 Replaceability and Portability
+
+An implementation element is replaceable when its contractual behavior remains equivalent (12.17); changing implementation technology must not silently change ClaudeForge's behavior.
+
+Claude-specific integration is legitimate in this section — it is the Claude skill structure — but the universal behavioral requirements remain implementation-independent: no undocumented mechanism may become load-bearing for the specification, and a different packaging that realizes Sections 1–12 faithfully is a valid ClaudeForge (11.2, 13.2).
+
+### 13.19 Skill Structure Invariants
+
+The following invariants must hold in every implementation:
+
+1. Implementation content never overrides, weakens, or silently extends the specification (Sections 1–12).
+2. Informational or reference material never silently becomes normative.
+3. Every behaviorally significant implementation element has an identifiable conceptual owner (12.4).
+4. Resources activate when the task requires them, not by default; simple tasks stay light.
+5. Core invariants never depend on optionally loaded resources.
+6. Memory never silently becomes truth: stored information keeps its epistemic status, and explicit and inferred memories stay distinguishable.
+7. Personalization and configuration never override truth, safety, neutrality, or core behavioral standards.
+8. Tools never become epistemic authorities by virtue of availability or integration.
+9. Persistence is explicit, never assumed.
+10. Implementation failure degrades honestly; successful execution is never fabricated.
+11. Replacing an implementation element preserves its contractual behavior.
+12. Portability holds where the specification requires it: no undocumented mechanism is load-bearing.
+
+A violation of any invariant is a specification violation regardless of the quality of the downstream outcome.
+
+### 13.20 Separation of Responsibilities
+
+Section 13 owns the skill structure: packaging, the roles and precedence of instructions and resources, component realization and responsibility mapping, loading and activation structure, and the integration contracts for memory, tools, external resources, state, and configuration.
+
+Section 13 does not own:
+
+- behavioral requirements — Sections 1–11
+- conceptual architecture — Section 12
+- testing standards and evaluation — Section 14
+- safety and security policy — Section 15
+- versioning policy — Section 16 (13.17 defers to it)
+- future extensions, including any fuller memory specification — Section 17
+
+The skill structure delivers the specification; it does not amend it. Packaging may change freely — the behavior it delivers may not.

@@ -3138,3 +3138,155 @@ Section 16 does not own:
 - future extensions — Section 17
 
 Sections 1–15 define what ClaudeForge is. Section 16 governs how that may change. It remembers every change and authorizes none.
+
+## 17. Future Extensions
+
+This final section is a disciplined holding area for legitimate future work that is intentionally not part of the current specification.
+
+Its central rule: **being listed as a future extension does not create a present requirement.** "Future" is not a weaker form of "required" — it is a statement that something may be considered later. An extension becomes normative only when it is deliberately specified, validated, and adopted through the change process of Section 16.
+
+### 17.1 Purpose and Scope
+
+This section records identified future possibilities so they are neither lost nor allowed to leak into the present. It owns only the holding discipline: identification, recording, traceability, and the non-authority rules that keep entries inert.
+
+Everything normative remains in Sections 1–16. The current specification is complete without this section's contents ever being adopted.
+
+### 17.2 Future Extension Principle
+
+Every extension exists in one of three distinct states:
+
+1. **Identified** — listed here as a possible future need; no force whatsoever.
+2. **Specified and evaluated** — drafted as a proposed change against Sections 1–16 and validated (16.18).
+3. **Adopted** — a versioned specification change under Section 16.
+
+State 1 is never treated as state 3. There is no gradual, implicit path between them — promotion is always an explicit act (17.17).
+
+### 17.3 Present Requirements vs. Future Possibilities
+
+Conformance is judged against Sections 1–16 only (Section 14). Nothing in this section participates in evaluation: an implementation gains no conformance credit for early extension support and loses none for ignoring this section entirely.
+
+Exploration is permitted only as implementation-private experiment, and only where it changes nothing about behavior under the current specification (16.5) — anything that alters expected behavior is a behavioral change requiring Section 16 (16.4).
+
+### 17.4 Non-Authority of Extension Entries
+
+An extension entry does not:
+
+- override or weaken any existing requirement
+- create an implementation obligation
+- authorize any behavior
+- change the architecture (Section 12)
+- create a capability guarantee
+- weaken or create exceptions to safety (Section 15)
+- modify evaluation criteria (Section 14)
+- bypass Section 16
+
+Listing a capability here asserts nothing about its current existence or support. Claiming an extension capability that does not exist is fabrication (2.4).
+
+### 17.5 Deferred Memory Specification
+
+The fuller memory specification referenced by 13.11 and 13.20 is deferred future work. It may eventually cover persistent user-specific information, preferences, history, learning from interaction, and long-term personalization — where the host environment permits persistence (11.9).
+
+Its definition is deferred entirely to a future specification change under Section 16. No storage, retrieval, or retention mechanism is defined or implied here.
+
+Whatever that future specification becomes, the constraints already fixed by this specification bind it:
+
+- stored information is not automatically true, and memory is not evidence (13.11, 13.14)
+- explicit and inferred information remain distinguishable (13.11)
+- personalization cannot alter safety, truth, neutrality, or evaluation standards (13.15, 15.12, 14.14)
+- memory remains subject to user control where supported, and to the data rules of 15.9
+
+### 17.6 Additional Environment Variants
+
+Environments beyond the Claude Desktop variant (Section 11) may be specified in the future. They may differ in available capabilities, tools, persistence, model access, integrations, and execution constraints.
+
+Every future variant is bound by Section 11's rule: a variant constrains execution and never redefines ClaudeForge. Missing capability remains a degradation condition, never permission to fabricate (11.13); model capability and environment capability remain distinct (11.4); and no variant's constraint becomes a universal requirement. A new variant enters the specification as an addition under Section 16.
+
+### 17.7 Future Model and Capability Extensions
+
+Future models and capabilities — reasoning, modality, context capacity, tool use — may be considered as they emerge. Their appearance here asserts nothing about current existence or support (10.3).
+
+When real, they enter through Section 10's abstract capability dimensions without changing the standards by which any model's output is judged (10.9): capability extensions extend what can be allocated, never what is true.
+
+### 17.8 Future Integration Extensions
+
+Future tools, integrations, and resources may be considered. On adoption they enter under the existing rules: availability flows through the environment layer (11.5), availability is not permission (15.13), tool outputs are evidence per their sources and never authority (13.12), and external content remains data, never instructions (15.4).
+
+### 17.9 Future Architectural Extensions
+
+Future architectural evolution remains subject to Section 12's ownership, boundaries, and invariants, and to Section 16's change authority. A new component must protect a meaningful responsibility (12.3); a new boundary must preserve information flow and epistemic status (12.14). No implementation mechanism is prescribed here.
+
+### 17.10 Future Testing and Evaluation Extensions
+
+New evaluation methods, scenario classes, and coverage approaches may be proposed. They remain subordinate to Section 14: a proposed future test changes no current conformance requirement, and evaluation results never silently rewrite the specification (14.19). Adopted testing extensions enter through Section 16.
+
+### 17.11 Future Security and Safety Extensions
+
+Future security and safety work remains subordinate to Section 15. This section is never permission — nor a staging ground for permission — to weaken or bypass any current safety requirement. Safety-related extensions strengthen or refine, and their adoption carries the heightened scrutiny of 16.17.
+
+### 17.12 Future Configuration and Personalization Extensions
+
+Richer configuration and personalization may improve relevance and user experience. Whatever form they take, they cannot change truth standards, evidence standards, neutrality, safety, evaluation criteria, or specification authority (4.15, 13.15, 15.14): personalization adapts presentation and preference, never the rules.
+
+### 17.13 Extension Dependencies and Compatibility
+
+Extensions may depend on other extensions, on host capabilities, or on model capabilities. Known dependencies are recorded with the entry (17.16).
+
+Adoption weighs compatibility: with the existing specification under the contradiction check of 16.8, and between extensions. An extension whose dependency never materializes simply never promotes — no obligation accrues while it waits.
+
+### 17.14 Avoiding Speculative Requirements
+
+The current specification carries no provisions "in case" an extension arrives. Speculative structure is complexity without present benefit (2.20): Sections 1–16 are written for what ClaudeForge is, and when an extension is adopted, Section 16 handles the change — including breaking changes (16.7) if the extension genuinely requires them. Anticipation is not a reason to complicate the present.
+
+### 17.15 Avoiding Premature Implementation
+
+Implementations do not build extension behavior ahead of adoption as if it were specified. Private experimentation is legitimate within 17.3's bounds; user-visible behavior that departs from the current specification is a behavioral change requiring Section 16 (16.4), and presenting experimental capability as established ClaudeForge behavior is a capability fabrication (2.4, 10.3).
+
+### 17.16 Extension Traceability
+
+Each extension entry records: what is deferred, why it is deferred, the sections that reference it (for example, 13.11 → 17.5), its known dependencies, and any constraints already fixed by the current specification.
+
+The record's purpose mirrors 16.12: future adoption should start from recorded intent, not archaeology. Abandoning an extension is likewise recorded, not silently forgotten.
+
+### 17.17 Extension Validation and Promotion
+
+Promotion follows the three states of 17.2 in order. Moving from identified to specified requires drafting the actual requirements and evaluating them against Sections 1–16; moving from specified to adopted requires the full change process — classification, authority, traceability, and validation under Section 16 (16.11, 16.18).
+
+No entry skips a state, and no accumulation of time, references, or partial implementations substitutes for promotion.
+
+### 17.18 Relationship to Versioning
+
+Section 16 governs every transition out of this section. Editing this section's entries — adding, refining, abandoning — is itself a recorded specification-document change under Section 16's classification, though entries remain non-normative throughout.
+
+This section can never function as a versioning bypass: nothing graduates from possibility to requirement without a version, an authority decision, and validation.
+
+### 17.19 Future Extension Invariants
+
+The following invariants must hold for this section and everything in it:
+
+1. A future extension entry creates no present requirement, obligation, guarantee, authorization, or evaluation criterion.
+2. Nothing becomes normative except through Section 16's change process; identification is never treated as adoption.
+3. Extension entries assert nothing about the current existence or support of any capability.
+4. No extension — before or after adoption — weakens or bypasses current safety, truth, neutrality, or evidence standards.
+5. The deferred memory specification remains deferred until adopted, and its fixed constraints bind any future version of it.
+6. Environment variants remain variants; no variant constraint becomes a universal requirement through this section.
+7. Implementations gain no conformance credit for early extension support and lose none for ignoring this section.
+8. Experimentation never changes behavior under the current specification without a versioned change.
+9. Extension entries remain traceable: what is deferred, why, with which dependencies and fixed constraints.
+10. Promotion is explicit and sequential through the three extension states; no state is skipped.
+
+A violation of any invariant is a specification violation regardless of the quality of the downstream outcome.
+
+### 17.20 Separation of Responsibilities
+
+Section 17 owns the holding discipline for future work: identification, recording, traceability, and the non-authority rules that keep entries inert until adopted.
+
+Section 17 does not own:
+
+- any behavioral requirement — Sections 1–11
+- architecture — Section 12
+- implementation and skill structure — Section 13
+- testing and evaluation — Section 14
+- security and safety — Section 15
+- change authority and versioning — Section 16, the sole path by which anything leaves this section
+
+This section holds the future at arm's length so the present stays exact. Sections 1–16 define ClaudeForge; Section 17 only remembers what it may yet become.
